@@ -11,11 +11,11 @@ export const Route = createFileRoute("/")({
         content:
           "Cole seu SteamID e veja horas jogadas, progresso de conquistas, quanto falta para platinar cada jogo e a descrição de cada troféu.",
       },
-      { property: "og:title", content: "SteamVault — Seu cofre de conquistas Steam" },
+      { property: "og:title", content: "SteamVault — Estatísticas e conquistas dos seus jogos Steam" },
       {
         property: "og:description",
         content:
-          "Estatísticas da sua biblioteca Steam, ranking de platinas próximas e descrição de cada conquista que falta.",
+          "Cole seu SteamID e veja horas jogadas, progresso de conquistas, quanto falta para platinar cada jogo e a descrição de cada troféu.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },

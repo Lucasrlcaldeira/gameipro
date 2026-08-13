@@ -77,14 +77,20 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "SteamVault — Conquistas e estatísticas da Steam" },
+      { title: "SteamVault — Estatísticas e conquistas dos seus jogos Steam" },
       {
         name: "description",
         content:
-          "Veja estatísticas da sua biblioteca Steam e quantas conquistas faltam para platinar cada jogo.",
+          "Cole seu SteamID e veja horas jogadas, progresso de conquistas, quanto falta para platinar cada jogo e a descrição de cada troféu.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
+      { property: "og:title", content: "SteamVault — Estatísticas e conquistas dos seus jogos Steam" },
+      { name: "twitter:title", content: "SteamVault — Estatísticas e conquistas dos seus jogos Steam" },
+      { property: "og:description", content: "Cole seu SteamID e veja horas jogadas, progresso de conquistas, quanto falta para platinar cada jogo e a descrição de cada troféu." },
+      { name: "twitter:description", content: "Cole seu SteamID e veja horas jogadas, progresso de conquistas, quanto falta para platinar cada jogo e a descrição de cada troféu." },
+      { property: "og:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/4979cb40-f9fa-412f-9592-416633451f50" },
+      { name: "twitter:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/4979cb40-f9fa-412f-9592-416633451f50" },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
@@ -94,7 +100,6 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         rel: "stylesheet",
         href: "https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Inter:wght@400;500;600&display=swap",
       },
-      { rel: "icon", href: "/favicon.ico", type: "image/x-icon" },
     ],
   }),
   shellComponent: RootShell,
