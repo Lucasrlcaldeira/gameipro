@@ -10,33 +10,53 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as PerfilQueryRouteImport } from './routes/perfil.$query'
+import { Route as JogoSteamidAppidRouteImport } from './routes/jogo.$steamid.$appid'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PerfilQueryRoute = PerfilQueryRouteImport.update({
+  id: '/perfil/$query',
+  path: '/perfil/$query',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const JogoSteamidAppidRoute = JogoSteamidAppidRouteImport.update({
+  id: '/jogo/$steamid/$appid',
+  path: '/jogo/$steamid/$appid',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/perfil/$query': typeof PerfilQueryRoute
+  '/jogo/$steamid/$appid': typeof JogoSteamidAppidRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/perfil/$query': typeof PerfilQueryRoute
+  '/jogo/$steamid/$appid': typeof JogoSteamidAppidRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/perfil/$query': typeof PerfilQueryRoute
+  '/jogo/$steamid/$appid': typeof JogoSteamidAppidRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths: '/' | '/perfil/$query' | '/jogo/$steamid/$appid'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to: '/' | '/perfil/$query' | '/jogo/$steamid/$appid'
+  id: '__root__' | '/' | '/perfil/$query' | '/jogo/$steamid/$appid'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  PerfilQueryRoute: typeof PerfilQueryRoute
+  JogoSteamidAppidRoute: typeof JogoSteamidAppidRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +68,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/perfil/$query': {
+      id: '/perfil/$query'
+      path: '/perfil/$query'
+      fullPath: '/perfil/$query'
+      preLoaderRoute: typeof PerfilQueryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/jogo/$steamid/$appid': {
+      id: '/jogo/$steamid/$appid'
+      path: '/jogo/$steamid/$appid'
+      fullPath: '/jogo/$steamid/$appid'
+      preLoaderRoute: typeof JogoSteamidAppidRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  PerfilQueryRoute: PerfilQueryRoute,
+  JogoSteamidAppidRoute: JogoSteamidAppidRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
