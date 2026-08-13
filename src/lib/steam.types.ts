@@ -17,6 +17,8 @@ export interface SteamGame {
   headerUrl: string;
   achievementsTotal: number;
   achievementsUnlocked: number;
+  /** O jogo publica estatísticas/conquistas na Steam. */
+  hasStats?: boolean;
   lastPlayed?: number;
 }
 

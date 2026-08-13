@@ -95,6 +95,12 @@ function GamePage() {
         <img
           src={data.headerUrl}
           alt={`Capa de ${data.gameName}`}
+          onError={(e) => {
+            const img = e.currentTarget;
+            const fallback = `https://cdn.cloudflare.steamstatic.com/steam/apps/${data.appId}/capsule_616x353.jpg`;
+            if (img.src !== fallback) img.src = fallback;
+            else img.style.display = "none";
+          }}
           className="h-44 w-full object-cover sm:h-60"
         />
         <div className="p-6">

@@ -110,21 +110,27 @@ export const getProfileOverview = createServerFn({ method: "POST" })
         headerUrl: headerUrl(g.appid),
         achievementsTotal: 0,
         achievementsUnlocked: 0,
+        hasStats: g.has_community_visible_stats === true,
         ...(g.rtime_last_played ? { lastPlayed: g.rtime_last_played } : {}),
       }))
       .sort((a, b) => b.playtimeMinutes - a.playtimeMinutes);
 
-    // Conquistas só dos 24 jogos mais jogados (limite de chamadas da API da Steam).
-    const top = games.filter((g) => g.playtimeMinutes > 0).slice(0, 24);
+    // Conquistas dos jogos mais jogados que publicam estatísticas.
+    const top = games
+      .filter((g) => g.playtimeMinutes > 0 && g.hasStats !== false)
+      .slice(0, 60);
     await Promise.all(
       top.map(async (g) => {
         const res = await j<{
           playerstats?: { achievements?: Array<{ achieved: number }>; success?: boolean };
         }>(
-          `${API}/ISteamUserStats/GetPlayerAchievements/v1/?key=${key}&steamid=${steamId}&appid=${g.appId}&l=portuguese`,
+          `${API}/ISteamUserStats/GetPlayerAchievements/v1/?key=${key}&steamid=${steamId}&appid=${g.appId}&l=brazilian`,
         );
         const list = res?.playerstats?.achievements;
-        if (!list) return;
+        if (!list) {
+          g.hasStats = false;
+          return;
+        }
         g.achievementsTotal = list.length;
         g.achievementsUnlocked = list.filter((a) => a.achieved === 1).length;
       }),
@@ -158,7 +164,7 @@ export const getGameAchievements = createServerFn({ method: "POST" })
           achievements?: Array<{ apiname: string; achieved: number; unlocktime: number }>;
         };
       }>(
-        `${API}/ISteamUserStats/GetPlayerAchievements/v1/?key=${key}&steamid=${data.steamId}&appid=${data.appId}&l=portuguese`,
+        `${API}/ISteamUserStats/GetPlayerAchievements/v1/?key=${key}&steamid=${data.steamId}&appid=${data.appId}&l=brazilian`,
       ),
       j<{
         game?: {
@@ -174,7 +180,7 @@ export const getGameAchievements = createServerFn({ method: "POST" })
           };
         };
       }>(
-        `${API}/ISteamUserStats/GetSchemaForGame/v2/?key=${key}&appid=${data.appId}&l=portuguese`,
+        `${API}/ISteamUserStats/GetSchemaForGame/v2/?key=${key}&appid=${data.appId}&l=brazilian`,
       ),
       j<{ achievementpercentages?: { achievements?: Array<{ name: string; percent: number }> } }>(
         `${API}/ISteamUserStats/GetGlobalAchievementPercentagesForApp/v2/?gameid=${data.appId}`,
