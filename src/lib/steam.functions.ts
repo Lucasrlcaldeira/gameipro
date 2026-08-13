@@ -63,9 +63,9 @@ const stateMap = ["offline", "online", "busy", "away", "away", "online", "online
 export const getProfileOverview = createServerFn({ method: "POST" })
   .inputValidator((data: unknown) => inputSchema.parse(data))
   .handler(async ({ data }): Promise<ProfileOverview> => {
-    const key = process.env["STEAM_API_KEY"];
+    const key = process.env["STEAM_API_KEY"]?.trim();
     const fallbackId = /^\d{17}$/.test(data.query) ? data.query : "76561197960287930";
-    if (!key) return demoOverview(fallbackId);
+    if (!key || !/^[A-Fa-f0-9]{32}$/.test(key)) return demoOverview(fallbackId);
 
     const steamId = await resolveSteamId(data.query, key);
     if (!steamId) throw new Error("Perfil não encontrado. Confira o SteamID ou a URL.");
@@ -148,8 +148,8 @@ export const getProfileOverview = createServerFn({ method: "POST" })
 export const getGameAchievements = createServerFn({ method: "POST" })
   .inputValidator((data: unknown) => gameSchema.parse(data))
   .handler(async ({ data }): Promise<GameAchievements> => {
-    const key = process.env["STEAM_API_KEY"];
-    if (!key) return demoGame(data.appId);
+    const key = process.env["STEAM_API_KEY"]?.trim();
+    if (!key || !/^[A-Fa-f0-9]{32}$/.test(key)) return demoGame(data.appId);
 
     const [player, schema, global] = await Promise.all([
       j<{
