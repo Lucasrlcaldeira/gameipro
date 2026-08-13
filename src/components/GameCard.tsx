@@ -63,6 +63,10 @@ export function GameCard({ game, steamId }: { game: SteamGame; steamId: string }
               </span>
             </div>
           </div>
+        ) : game.hasStats !== false ? (
+          <p className="mt-3 text-xs text-muted-foreground">
+            Conquistas não carregadas — abra o jogo para ver
+          </p>
         ) : (
           <p className="mt-3 text-xs text-muted-foreground">Sem conquistas registradas</p>
         )}
