@@ -78,7 +78,7 @@ export function demoAchievements(appId: number): SteamAchievement[] {
       icon: icon(game.appId),
       iconGray: icon(game.appId),
       unlocked,
-      unlockTime: unlocked ? game.lastPlayed - i * 86400 : undefined,
+      ...(unlocked ? { unlockTime: game.lastPlayed - i * 86400 } : {}),
       globalPercent: Math.round((unlocked ? 12 + r * 70 : 0.8 + r * 35) * 10) / 10,
     });
   }
