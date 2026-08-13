@@ -115,8 +115,10 @@ export const getProfileOverview = createServerFn({ method: "POST" })
       }))
       .sort((a, b) => b.playtimeMinutes - a.playtimeMinutes);
 
-    // Conquistas só dos 24 jogos mais jogados (limite de chamadas da API da Steam).
-    const top = games.filter((g) => g.playtimeMinutes > 0).slice(0, 24);
+    // Conquistas dos jogos mais jogados que publicam estatísticas.
+    const top = games
+      .filter((g) => g.playtimeMinutes > 0 && g.hasStats !== false)
+      .slice(0, 60);
     await Promise.all(
       top.map(async (g) => {
         const res = await j<{
@@ -125,7 +127,10 @@ export const getProfileOverview = createServerFn({ method: "POST" })
           `${API}/ISteamUserStats/GetPlayerAchievements/v1/?key=${key}&steamid=${steamId}&appid=${g.appId}&l=brazilian`,
         );
         const list = res?.playerstats?.achievements;
-        if (!list) return;
+        if (!list) {
+          g.hasStats = false;
+          return;
+        }
         g.achievementsTotal = list.length;
         g.achievementsUnlocked = list.filter((a) => a.achieved === 1).length;
       }),
