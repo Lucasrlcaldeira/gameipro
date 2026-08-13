@@ -15,11 +15,23 @@ export function GameCard({ game, steamId }: { game: SteamGame; steamId: string }
       className="panel group block overflow-hidden transition-transform hover:-translate-y-1 hover:neon-ring"
     >
       <div className="relative aspect-[92/43] overflow-hidden bg-surface-2">
+        <span className="absolute inset-0 flex items-center justify-center px-3 text-center font-display text-sm font-semibold text-muted-foreground">
+          {game.name}
+        </span>
         <img
           src={game.headerUrl}
           alt={`Capa de ${game.name}`}
           loading="lazy"
-          className="size-full object-cover transition-transform duration-500 group-hover:scale-105"
+          onError={(e) => {
+            const img = e.currentTarget;
+            const fallback = `https://cdn.cloudflare.steamstatic.com/steam/apps/${game.appId}/capsule_616x353.jpg`;
+            if (img.src !== fallback) {
+              img.src = fallback;
+            } else {
+              img.style.display = "none";
+            }
+          }}
+          className="relative size-full object-cover transition-transform duration-500 group-hover:scale-105"
         />
         {platinum && (
           <span className="absolute right-2 top-2 inline-flex items-center gap-1 rounded-full bg-background/80 px-2.5 py-1 text-xs font-semibold text-platinum backdrop-blur">
