@@ -110,6 +110,7 @@ export const getProfileOverview = createServerFn({ method: "POST" })
         headerUrl: headerUrl(g.appid),
         achievementsTotal: 0,
         achievementsUnlocked: 0,
+        hasStats: g.has_community_visible_stats === true,
         ...(g.rtime_last_played ? { lastPlayed: g.rtime_last_played } : {}),
       }))
       .sort((a, b) => b.playtimeMinutes - a.playtimeMinutes);
@@ -121,7 +122,7 @@ export const getProfileOverview = createServerFn({ method: "POST" })
         const res = await j<{
           playerstats?: { achievements?: Array<{ achieved: number }>; success?: boolean };
         }>(
-          `${API}/ISteamUserStats/GetPlayerAchievements/v1/?key=${key}&steamid=${steamId}&appid=${g.appId}&l=portuguese`,
+          `${API}/ISteamUserStats/GetPlayerAchievements/v1/?key=${key}&steamid=${steamId}&appid=${g.appId}&l=brazilian`,
         );
         const list = res?.playerstats?.achievements;
         if (!list) return;
@@ -158,7 +159,7 @@ export const getGameAchievements = createServerFn({ method: "POST" })
           achievements?: Array<{ apiname: string; achieved: number; unlocktime: number }>;
         };
       }>(
-        `${API}/ISteamUserStats/GetPlayerAchievements/v1/?key=${key}&steamid=${data.steamId}&appid=${data.appId}&l=portuguese`,
+        `${API}/ISteamUserStats/GetPlayerAchievements/v1/?key=${key}&steamid=${data.steamId}&appid=${data.appId}&l=brazilian`,
       ),
       j<{
         game?: {
@@ -174,7 +175,7 @@ export const getGameAchievements = createServerFn({ method: "POST" })
           };
         };
       }>(
-        `${API}/ISteamUserStats/GetSchemaForGame/v2/?key=${key}&appid=${data.appId}&l=portuguese`,
+        `${API}/ISteamUserStats/GetSchemaForGame/v2/?key=${key}&appid=${data.appId}&l=brazilian`,
       ),
       j<{ achievementpercentages?: { achievements?: Array<{ name: string; percent: number }> } }>(
         `${API}/ISteamUserStats/GetGlobalAchievementPercentagesForApp/v2/?gameid=${data.appId}`,
