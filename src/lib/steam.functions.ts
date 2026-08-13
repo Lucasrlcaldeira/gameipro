@@ -29,12 +29,28 @@ async function j<T>(url: string): Promise<T | null> {
   }
 }
 
+/** Decodifica múltiplas vezes (a URL pode chegar duplamente codificada). */
+function decodeDeep(value: string): string {
+  let out = value;
+  for (let i = 0; i < 3 && /%[0-9A-Fa-f]{2}/.test(out); i++) {
+    try {
+      const next = decodeURIComponent(out);
+      if (next === out) break;
+      out = next;
+    } catch {
+      break;
+    }
+  }
+  return out;
+}
+
 /** Aceita SteamID64, URL de perfil ou vanity name. */
 async function resolveSteamId(raw: string, key: string): Promise<string | null> {
-  let q = raw.trim();
+  let q = decodeDeep(raw).trim().replace(/\/+$/, "");
   const urlMatch = q.match(/steamcommunity\.com\/(profiles|id)\/([^/?#]+)/i);
   if (urlMatch) q = urlMatch[2]!;
   if (/^\d{17}$/.test(q)) return q;
+
   const data = await j<{ response?: { steamid?: string; success?: number } }>(
     `${API}/ISteamUser/ResolveVanityURL/v1/?key=${key}&vanityurl=${encodeURIComponent(q)}`,
   );
