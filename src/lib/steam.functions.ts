@@ -29,12 +29,28 @@ async function j<T>(url: string): Promise<T | null> {
   }
 }
 
+/** Decodifica múltiplas vezes (a URL pode chegar duplamente codificada). */
+function decodeDeep(value: string): string {
+  let out = value;
+  for (let i = 0; i < 3 && /%[0-9A-Fa-f]{2}/.test(out); i++) {
+    try {
+      const next = decodeURIComponent(out);
+      if (next === out) break;
+      out = next;
+    } catch {
+      break;
+    }
+  }
+  return out;
+}
+
 /** Aceita SteamID64, URL de perfil ou vanity name. */
 async function resolveSteamId(raw: string, key: string): Promise<string | null> {
-  let q = raw.trim();
+  let q = decodeDeep(raw).trim().replace(/\/+$/, "");
   const urlMatch = q.match(/steamcommunity\.com\/(profiles|id)\/([^/?#]+)/i);
   if (urlMatch) q = urlMatch[2]!;
   if (/^\d{17}$/.test(q)) return q;
+
   const data = await j<{ response?: { steamid?: string; success?: number } }>(
     `${API}/ISteamUser/ResolveVanityURL/v1/?key=${key}&vanityurl=${encodeURIComponent(q)}`,
   );
@@ -47,9 +63,9 @@ const stateMap = ["offline", "online", "busy", "away", "away", "online", "online
 export const getProfileOverview = createServerFn({ method: "POST" })
   .inputValidator((data: unknown) => inputSchema.parse(data))
   .handler(async ({ data }): Promise<ProfileOverview> => {
-    const key = process.env["STEAM_API_KEY"];
+    const key = process.env["STEAM_API_KEY"]?.trim();
     const fallbackId = /^\d{17}$/.test(data.query) ? data.query : "76561197960287930";
-    if (!key) return demoOverview(fallbackId);
+    if (!key || !/^[A-Fa-f0-9]{32}$/.test(key)) return demoOverview(fallbackId);
 
     const steamId = await resolveSteamId(data.query, key);
     if (!steamId) throw new Error("Perfil não encontrado. Confira o SteamID ou a URL.");
@@ -132,8 +148,8 @@ export const getProfileOverview = createServerFn({ method: "POST" })
 export const getGameAchievements = createServerFn({ method: "POST" })
   .inputValidator((data: unknown) => gameSchema.parse(data))
   .handler(async ({ data }): Promise<GameAchievements> => {
-    const key = process.env["STEAM_API_KEY"];
-    if (!key) return demoGame(data.appId);
+    const key = process.env["STEAM_API_KEY"]?.trim();
+    if (!key || !/^[A-Fa-f0-9]{32}$/.test(key)) return demoGame(data.appId);
 
     const [player, schema, global] = await Promise.all([
       j<{
